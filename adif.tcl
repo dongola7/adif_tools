@@ -16,7 +16,7 @@ namespace eval ::adif {
 #
 # If EOF is detected before a complete record is found, an empty dict is returned
 #
-proc ::adif::nextRecord {chan} {
+proc ::adif::readNextRecord {chan} {
     set fieldValues [dict create]
 
     while {![eof $chan]} {
@@ -74,7 +74,7 @@ proc ::adif::ReadUntil {chan searchChar} {
 }
 
 #
-# Given a dict of the same format returned by ::adif::nextRecord,
+# Given a dict of the same format returned by ::adif::readNextRecord,
 # converts the record into ADIF format and writes the result to the specified
 # channel. All field names are normalized to uppercase when written to the
 # channel.
@@ -101,7 +101,7 @@ proc main {argc argv} {
     set outChan [open "sample.adi" "w"]
 
     puts "reading from $fileName"
-    set record [::adif::nextRecord $inChan]
+    set record [::adif::readNextRecord $inChan]
     while {[dict size $record] != 0} {
         puts "found record: $record"
         puts ""
@@ -109,7 +109,7 @@ proc main {argc argv} {
         ::adif::writeRecord $outChan $record
         puts ""
 
-        set record [::adif::nextRecord $inChan]
+        set record [::adif::readNextRecord $inChan]
     }
 
     puts "done reading from $fileName"
