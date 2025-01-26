@@ -1,3 +1,12 @@
+#
+# This Tcl package provides basic parsing and writing of ADIF formatted records
+# for use in Amateur Radio Logging. It's loosely based on the spec at
+# https://adif.org, but does not fully implement all aspects. For example, user
+# defined fields and data types are not supported.
+#
+# This is really a personal project intended as a WIP and meeting whatever my
+# needs are at the time.
+#
 package require Tcl 8.5
 
 package provide adif 0.1
