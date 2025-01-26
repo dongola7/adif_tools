@@ -73,19 +73,48 @@ proc ::adif::ReadUntil {chan searchChar} {
     return $result
 }
 
+#
+# Given a dict of the same format returned by ::adif::nextRecord,
+# converts the record into ADIF format and writes the result to the specified
+# channel. All field names are normalized to uppercase when written to the
+# channel.
+#
+proc ::adif::writeRecord {chan record} {
+    set fieldValues [dict get $record recordData]
+
+    dict for {name value} $fieldValues {
+        set name [string toupper $name]
+        set valueLen [string length $value]
+        puts -nonewline $chan "<$name:$valueLen>$value "
+    }
+
+    if {[dict get $record recordType] == "qso"} {
+        puts $chan "<EOR>"
+    } else {
+        puts $chan "<EOH>"
+    }
+}
+
 proc main {argc argv} {
     set fileName [lindex $argv 0]
     set inChan [open $fileName "r"]
+    set outChan [open "sample.adi" "w"]
 
     puts "reading from $fileName"
     set record [::adif::nextRecord $inChan]
     while {[dict size $record] != 0} {
         puts "found record: $record"
+        puts ""
+        puts "writing record"
+        ::adif::writeRecord $outChan $record
+        puts ""
+
         set record [::adif::nextRecord $inChan]
     }
 
     puts "done reading from $fileName"
     close $inChan
+    close $outChan
 }
 
 main $argc $argv
