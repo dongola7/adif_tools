@@ -38,7 +38,12 @@ proc ::adif::nextRecord {chan} {
         # If we've found the end of a header or record, return the fields values
         # found so far along with the record type
         if {$field == "eoh" || $field == "eor"} {
-            return [dict create recordType $field recordData $fieldValues]
+            if {$field == "eoh"} {
+                set recordType "header"
+            } else {
+                set recordType "qso"
+            }
+            return [dict create recordType $recordType recordData $fieldValues]
         }
 
         # We have a new record field. Parse the name/length, read the value, and
