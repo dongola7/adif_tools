@@ -1,5 +1,11 @@
 #!/usr/bin/tclsh
 
+# Copyright (c) 2025, Blair Kitchen
+# All rights resetved.
+#
+# See the file "license.terms" for informatio on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
 #
 # This script is used to convert ADIF formatted files to Cabrillo format. It's currently built
 # for Winter Field Day and should conform to the Cabrillo examples provided in

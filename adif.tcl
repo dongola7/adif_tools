@@ -1,4 +1,9 @@
+# Copyright (c) 2025, Blair Kitchen
+# All rights resetved.
 #
+# See the file "license.terms" for informatio on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
 # This Tcl package provides basic parsing and writing of ADIF formatted records
 # for use in Amateur Radio Logging. It's loosely based on the spec at
 # https://adif.org, but does not fully implement all aspects. For example, user

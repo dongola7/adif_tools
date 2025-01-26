@@ -1,5 +1,11 @@
 #!/usr/bin/tclsh
 
+# Copyright (c) 2025, Blair Kitchen
+# All rights resetved.
+#
+# See the file "license.terms" for informatio on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
 #
 # This script is used to pretty-print an ADIF file into a more
 # readable format, with one record per line

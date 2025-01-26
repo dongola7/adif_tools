@@ -1,3 +1,9 @@
+# Copyright (c) 2025, Blair Kitchen
+# All rights resetved.
+#
+# See the file "license.terms" for informatio on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
 source adif.tcl
 package require adif 0.1
 
