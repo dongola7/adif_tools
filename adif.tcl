@@ -87,7 +87,7 @@ proc ::adif::writeRecord {chan record} {
     dict for {name value} $fieldValues {
         set name [string toupper $name]
         set valueLen [string length $value]
-        puts -nonewline $chan "<$name:$valueLen>$value "
+        puts $chan "<$name:$valueLen>$value "
     }
 
     if {[dict get $record recordType] == "qso"} {
@@ -95,4 +95,5 @@ proc ::adif::writeRecord {chan record} {
     } else {
         puts $chan "<EOH>"
     }
+    puts $chan ""
 }
