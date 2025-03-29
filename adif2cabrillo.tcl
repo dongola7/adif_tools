@@ -23,8 +23,8 @@ package require adif 0.1
 proc main {argc argv} {
     set options {
         {output.arg "" "name of the output file. stdout if ommitted"}
-        {txexch.arg "stx_string" "list of ADIF fields, in order, included in the tx exchange"}
-        {rxexch.arg "srx_string" "list of ADIF fields, in order, included in the rx exchange"}
+        {txexch.arg "rst_sent stx stx_string" "list of ADIF fields, in order, included in the tx exchange"}
+        {rxexch.arg "rst_rcvd srx srx_string" "list of ADIF fields, in order, included in the rx exchange"}
     }
     set usage ": adif2cabrillo.tcl \[options] file1 file2 ... \noptions:"
     if {[catch {array set params [::cmdline::getoptions argv $options $usage]} result]} {
