@@ -1,0 +1,70 @@
+#!/usr/bin/tclsh
+package require Tcl 8.5
+package require tcltest 2.3
+
+source adif.tcl
+package require adif 0.1
+
+eval ::tcltest::configure $argv
+
+namespace eval ::adif::test {
+    namespace import ::tcltest::*
+
+    test readNextRecord-1 {read a standard QSO record} \
+        -setup {
+            set fileName [makeFile "<CALL:6>ABC123<DXCC:3>291<EOR>" input.adif]
+            set inChan [open $fileName "r"]
+        } -body {
+            ::adif::readNextRecord $inChan
+        } -result [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+    test readNextRecord-2 {read a standard ADIF header record} \
+        -setup {
+            set fileName [makeFile "<PROGRAMID:4>ADIF<ADIF_VER:5>3.1.3<EOH>" input.adif]
+            set inChan [open $fileName "r"]
+        } -body {
+            ::adif::readNextRecord $inChan
+        } -result [dict create recordType header recordData [dict create programid ADIF adif_ver 3.1.3]]
+    test readNextRecord-3 {return empty record on EOF} \
+        -setup {
+            set fileName [makeFile "<CALL:6>ABC123<DXCC:3>291<" input.adif]
+            set inChan [open $fileName "r"]
+        } -body {
+            ::adif::readNextRecord $inChan
+        } -result [dict create]
+    
+    test writeRecord-1 {write qso record} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            ::adif::writeRecord stdout $record
+        } -output "<CALL:6>ABC123\n<DXCC:3>291\n<EOR>\n\n"
+    test writeRecord-2 {write header record} \
+        -setup {
+            set record [dict create recordType header recordData [dict create programid ADIF adif_ver 3.1.3]]
+        } -body {
+            ::adif::writeRecord stdout $record
+        } -output "<PROGRAMID:4>ADIF\n<ADIF_VER:5>3.1.3\n<EOH>\n\n"
+
+    test dxccToName-1 {convert dxcc to country} \
+        -body {
+            ::adif::dxccToName 291
+        } -result "UNITED STATES OF AMERICA"
+    test dxccToName-2 {convert unknown dxcc value} \
+        -body {
+            ::adif::dxccToName 99999
+        } -result "dxcc-99999"
+
+    test contToName-1 {convert cont code to continent} \
+        -body {
+            ::adif::contToName "na"
+        } -result "NORTH AMERICA"
+    test contToName-2 {convert unknown cont code} \
+        -body {
+            ::adif::contToName "abc"
+        } -result "continent-abc"
+
+
+    cleanupTests
+}
+
+namespace delete ::adif::test

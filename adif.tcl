@@ -41,6 +41,7 @@ proc ::adif::readNextRecord {chan} {
 
         # Read the field name and length
         set field [ReadUntil $chan ">"]
+        set field [string trim $field]
 
         # If field name is empty, return an empty dict, as we hit EOF or some
         # other error.
@@ -101,7 +102,7 @@ proc ::adif::writeRecord {chan record} {
     dict for {name value} $fieldValues {
         set name [string toupper $name]
         set valueLen [string length $value]
-        puts $chan "<$name:$valueLen>$value "
+        puts $chan "<$name:$valueLen>$value"
     }
 
     if {[dict get $record recordType] == "qso"} {
@@ -122,7 +123,7 @@ proc ::adif::dxccToName {dxcc} {
     if {[info exists Dxcc2Country($dxcc)]} {
         return $Dxcc2Country($dxcc)
     } else {
-        return "**UNKNOWN**"
+        return "dxcc-$dxcc"
     }
 }
 
@@ -148,7 +149,7 @@ proc ::adif::contToName {cont} {
     } elseif {$cont == "an"} {
         return "ANTARCTICA"
     } else {
-        return "**UNKNOWN**"
+        return "continent-$cont"
     }
 }
 
@@ -560,4 +561,3 @@ array set ::adif::Dxcc2Country {
     521	"SOUTH SUDAN (REPUBLIC OF)"
     522	"REPUBLIC OF KOSOVO"
 }
-
