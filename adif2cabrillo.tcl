@@ -7,9 +7,7 @@
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 
 #
-# This script is used to convert ADIF formatted files to Cabrillo format. It's currently built
-# for Winter Field Day and should conform to the Cabrillo examples provided in
-# https://winterfieldday.org/sop.php
+# This script is used to convert ADIF formatted files to Cabrillo format.
 #
 # Note it's only been tested with ADIF files from MacLoggerDX. Adjustments may be needed
 # for other logging programs. I'll try to keep it updated as I gain more experience.
