@@ -79,7 +79,7 @@ proc aggregateContinentStats {continentDictVar recordFields} {
     if {[dict exists $recordFields cont]} {
         set continent [dict get $recordFields cont]
     }
-    set continent [contToContinent $continent]
+    set continent [::adif::contToName $continent]
 
     set dxcc "UNKNOWN"
     if {[dict exists $recordFields dxcc]} {
@@ -202,32 +202,6 @@ proc printContinentStats {continentDict outChan} {
         append summaryLine [format "%${bandWidth}d " [dict get $bandTotals $band]]
     }
     puts $outChan $summaryLine
-}
-
-#
-# Given an ADIF Continent enumeration from the CONT field, returns
-# the full continent name. Returns **UNKNOWN** if the enumeration is
-# not recognized. This function is not case sensitive.
-#
-proc contToContinent {cont} {
-    set cont [string tolower $cont]
-    if {$cont == "na"} {
-        return "NORTH AMERICA"
-    } elseif {$cont == "sa"} {
-        return "SOUTH AMERICA"
-    } elseif {$cont == "eu" } {
-        return "EUROPE"
-    } elseif {$cont == "af"} {
-        return "AFRICA"
-    } elseif {$cont == "oc"} {
-        return "OCEANIA"
-    } elseif {$cont == "as"} {
-        return "ASIA"
-    } elseif {$cont == "an"} {
-        return "ANTARCTICA"
-    } else {
-        return "**UNKNOWN**"
-    }
 }
 
 #

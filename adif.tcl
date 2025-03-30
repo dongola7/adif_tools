@@ -118,9 +118,35 @@ proc ::adif::writeRecord {chan record} {
 # is not recognized.
 #
 proc ::adif::dxccToName {dxcc} {
-    variable dxcc2Country
-    if {[info exists dxcc2Country($dxcc)]} {
-        return $dxcc2Country($dxcc)
+    variable Dxcc2Country
+    if {[info exists Dxcc2Country($dxcc)]} {
+        return $Dxcc2Country($dxcc)
+    } else {
+        return "**UNKNOWN**"
+    }
+}
+
+#
+# Given an ADIF Continent enumeration from the CONT field, returns
+# the full continent name. Returns **UNKNOWN** if the enumeration is
+# not recognized. This function is not case sensitive.
+#
+proc ::adif::contToName {cont} {
+    set cont [string tolower $cont]
+    if {$cont == "na"} {
+        return "NORTH AMERICA"
+    } elseif {$cont == "sa"} {
+        return "SOUTH AMERICA"
+    } elseif {$cont == "eu" } {
+        return "EUROPE"
+    } elseif {$cont == "af"} {
+        return "AFRICA"
+    } elseif {$cont == "oc"} {
+        return "OCEANIA"
+    } elseif {$cont == "as"} {
+        return "ASIA"
+    } elseif {$cont == "an"} {
+        return "ANTARCTICA"
     } else {
         return "**UNKNOWN**"
     }
@@ -129,7 +155,7 @@ proc ::adif::dxccToName {dxcc} {
 #
 # Maps DXCC enumeration values to their corresponding countries
 #
-array set ::adif::dxcc2Country {
+array set ::adif::Dxcc2Country {
     0	"NONE"
     1	"CANADA"
     2	"ABU AIL IS."
