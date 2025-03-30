@@ -19,6 +19,8 @@ package require adif 0.1
 proc main {argc argv} {
     set options {
         {output.arg "" "name of the output file. stdout if ommitted"}
+        {country "generate continent/country level statistics"}
+        {prefix "generate callsign prefix statistics"}
     }
     set usage ": adifstats.tcl \[options] file1 file2 ... \noptions:"
     if {[catch {array set params [::cmdline::getoptions argv $options $usage]} result]} {
@@ -31,12 +33,19 @@ proc main {argc argv} {
         set outChan [open $params(output) "w"]
     }
 
+    # Track the total number of QSOs and QSOs by file
+    set totalQsos 0
+    set qsosByFile [dict create]
+
+    # Initialize storage dicts
+    set continentDict [dict create]
+    set prefixDict [dict create]
+
     # Process each input file in order
     foreach inputFile [::cmdline::getfiles $argv false] {
         set inChan [open $inputFile "r"]
 
-        # Initialize storage dicts
-        set continentDict [dict create]
+        dict set qsosByFile $inputFile 0
 
         # An empty dict indicates we've reached EOF
         set adifRecord [::adif::readNextRecord $inChan]
@@ -44,19 +53,89 @@ proc main {argc argv} {
 
             # We're only processing qso records. Skip everything else
             if {[dict get $adifRecord recordType] == "qso"} {
+                incr totalQsos
+                dict incr qsosByFile $inputFile
+
                 set recordFields [dict get $adifRecord recordData]
                 
-                aggregateContinentStats continentDict $recordFields
-
+                # Compute statistics based on desired options
+                if {$params(country)} {
+                    aggregateContinentStats continentDict $recordFields
+                }
+                if {$params(prefix)} {
+                    aggregateCallsignPrefix prefixDict $recordFields
+                }
             }
 
             set adifRecord [::adif::readNextRecord $inChan]
         }
 
-        printContinentStats $continentDict $outChan
-
-        close $inChan
+       close $inChan
     }
+
+    # Output overall summaries based on desired options
+    if {$params(country)} {
+        printContinentStats $continentDict $outChan
+        puts $outChan ""
+    }
+    if {$params(prefix)} {
+        printCallsignPrefixStats $prefixDict $outChan
+        puts $outChan ""
+    }
+
+    puts $outChan "********* Total QSOs **********"
+    puts $outChan ""
+    dict for {fileName count} $qsosByFile {
+        puts $outChan [format "%-50s: %5s QSOs" $fileName $count]
+    }
+    puts $outChan ""
+    puts $outChan [format "%-50s: %5s QSOs" "TOTAL" $totalQsos]
+}
+
+#
+# Given a dictionary variable to store aggregate results and an adif record,
+# aggregates all of the unique callsign prefixes for output by the
+# printCallsignPrefixStats function.
+#
+proc aggregateCallsignPrefix {prefixDictVar recordFields} {
+    upvar $prefixDictVar prefixDict
+
+    set call [dict get $recordFields call]
+    regexp {([A-Za-z]+[0-9]+)} $call -> prefix
+
+    set count 1
+    if {[dict exists $prefixDict $prefix]} {
+        set count [dict get $prefixDict $prefix]
+        incr count
+    }
+    dict set prefixDict $prefix $count
+}
+
+#
+# Given a dictionary populated by the aggregateCallsignPrefix function, formats
+# and prints the aggregate statistics to the provided outChan.
+#
+proc printCallsignPrefixStats {prefixDict outChan} {
+    puts $outChan "********** Callsign Prefixes **********"
+    puts $outChan ""
+
+    set prefixWidth 8
+    set countWidth 5
+
+    # Print the header
+    puts $outChan [format "%-${prefixWidth}s %-${countWidth}s" "Prefix" "Count"]
+
+    set totalPrefixes 0
+    set totalCalls 0
+    dict for {prefix count} $prefixDict {
+        incr totalPrefixes
+
+        puts $outChan [format "%-${prefixWidth}s %${countWidth}d" $prefix $count]
+    }
+
+    puts $outChan ""
+
+    puts $outChan "Unique Prefixes: $totalPrefixes"
 }
 
 #
@@ -135,6 +214,8 @@ proc aggregateContinentStats {continentDictVar recordFields} {
 # Totals                             0  0  0  35   1  10   0   0   0   0   0   0    0
 #
 proc printContinentStats {continentDict outChan} {
+    puts $outChan "********** Continent and Country Statistics **********"
+    puts $outChan ""
 
     # Width of the band columns
     set bandWidth 6
@@ -250,6 +331,5 @@ proc freqToBand {freq} {
         return "UNKNOWN"
     }
 }
-
 
 main $argc $argv
