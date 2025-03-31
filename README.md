@@ -19,6 +19,7 @@ Clone the repo and start playing around. It's not sophisticated.
 * adif.tcl - Provides a simple Tcl package for reading/writing ADIF formatted data
 * pp_adif.tcl - Reads an ADIF formatted file and reformats it with one field per line
 * adif2cabrillo.tcl - Converts an ADIF formatted file to a series of Cabrillo formatted QSO records
+* adifstats.tcl - Reads an ADIF formatted file and produces various statistics to help in contest scoring
 
 # Language
 
