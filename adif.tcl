@@ -20,6 +20,27 @@ namespace eval ::adif {
 }
 
 #
+# Given a filename, iterates over all ADIF records in the file and executes
+# the script cmd for each record. During execution, the variable var is set
+# to the content of the record.
+#
+proc ::adif::foreachRecordInFile {var file cmd} {
+    upvar $var record
+
+    set inChan [open $file "r"]
+
+    # An empty dict indicates we've reached EOF
+    set record [readNextRecord $inChan]
+    while {[dict size $record] != 0} {
+        uplevel $cmd
+
+        set record [readNextRecord $inChan]
+    }
+
+    close $inChan
+}
+
+#
 # Given a channel containing ADIF formatted data, this function will return the
 # next record in the channel. Note the function will block until a complete record
 # is available or EOF is returned.

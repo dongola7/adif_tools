@@ -63,6 +63,17 @@ namespace eval ::adif::test {
             ::adif::contToName "abc"
         } -result "continent-abc"
 
+    test foreachRecordInFile-1 {read multiple records in file} \
+        -setup {
+            set fileName [makeFile "<CALL:6>ABC123<DXCC:3>291<EOR><CALL:6>DEF456<DXCC:3>101<EOR>" input.adif]
+        } -body {
+            set result [list]
+            ::adif::foreachRecordInFile record $fileName {
+                lappend result $record
+            }
+            return $result
+        } -result [list [dict create recordType qso recordData [dict create call ABC123 dxcc 291]] \
+            [dict create recordType qso recordData [dict create call DEF456 dxcc 101]]]
 
     cleanupTests
 }

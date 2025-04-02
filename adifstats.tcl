@@ -43,13 +43,9 @@ proc main {argc argv} {
 
     # Process each input file in order
     foreach inputFile [::cmdline::getfiles $argv false] {
-        set inChan [open $inputFile "r"]
-
         dict set qsosByFile $inputFile 0
 
-        # An empty dict indicates we've reached EOF
-        set adifRecord [::adif::readNextRecord $inChan]
-        while {[dict size $adifRecord] != 0} {
+        ::adif::foreachRecordInFile adifRecord $inputFile {
 
             # We're only processing qso records. Skip everything else
             if {[dict get $adifRecord recordType] == "qso"} {
@@ -67,10 +63,7 @@ proc main {argc argv} {
                 }
             }
 
-            set adifRecord [::adif::readNextRecord $inChan]
         }
-
-       close $inChan
     }
 
     # Output overall summaries based on desired options

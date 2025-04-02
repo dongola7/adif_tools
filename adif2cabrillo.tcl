@@ -40,11 +40,7 @@ proc main {argc argv} {
 
     # Process each input file in order
     foreach inputFile [::cmdline::getfiles $argv false] {
-        set inChan [open $inputFile "r"]
-
-        # An empty dict indicates we've reached EOF
-        set adifRecord [::adif::readNextRecord $inChan]
-        while {[dict size $adifRecord] != 0} {
+        ::adif::foreachRecordInFile adifRecord $inputFile {
 
             # We're only converting qso records. Skip everything else
             if {[dict get $adifRecord recordType] == "qso"} {
@@ -52,10 +48,7 @@ proc main {argc argv} {
                 puts $outChan [adifToCabrillo $txExchFields $rxExchFields $adifRecordFields]
             }
 
-            set adifRecord [::adif::readNextRecord $inChan]
         }
-
-        close $inChan
     }
 }
 

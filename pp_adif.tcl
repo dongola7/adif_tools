@@ -33,15 +33,10 @@ proc main {argc argv} {
     }
 
     foreach inputFile [::cmdline::getfiles $argv false] {
-        set inChan [open $inputFile "r"]
 
-        set adifRecord [::adif::readNextRecord $inChan]
-        while {[dict size $adifRecord] != 0} {
+        ::adif::foreachRecordInFile adifRecord $inputFile {
             ::adif::writeRecord $outChan $adifRecord
-            set adifRecord [::adif::readNextRecord $inChan]
         }
-
-        close $inChan
     }
 
     close $outChan
