@@ -136,7 +136,7 @@ proc ::adif::writeRecord {chan record} {
 
 #
 # Given an ADIF DXCC enumeration from the DXCC field, returns
-# the associated country name. Returns **UNKNOWN** if the enumeration
+# the associated country name. Returns dxcc-<dxcc> if the enumeration
 # is not recognized.
 #
 proc ::adif::dxccToName {dxcc} {
@@ -150,8 +150,8 @@ proc ::adif::dxccToName {dxcc} {
 
 #
 # Given an ADIF Continent enumeration from the CONT field, returns
-# the full continent name. Returns **UNKNOWN** if the enumeration is
-# not recognized. This function is not case sensitive.
+# the full continent name. Returns continent-<cont> if the enumeration
+# is not recognized. This function is not case sensitive.
 #
 proc ::adif::contToName {cont} {
     set cont [string tolower $cont]
