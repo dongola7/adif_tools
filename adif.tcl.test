@@ -36,7 +36,26 @@ namespace eval ::adif::test {
         } -body {
             ::adif::readNextRecord $inChan
         } -result [dict create]
-    
+
+    test getField-1 {get the value of a field} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            ::adif::getField $record call
+        } -result "ABC123"
+    test getField-2 {return empty value when field does not exist} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            ::adif::getField $record nosuchfield
+        } -result ""
+    test getField-3 {return the value of a field case insensitive field name} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            ::adif::getField $record CALL
+        } -result "ABC123"
+
     test writeRecord-1 {write qso record} \
         -setup {
             set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]

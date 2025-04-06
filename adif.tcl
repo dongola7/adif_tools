@@ -41,6 +41,24 @@ proc ::adif::foreachRecordInFile {var file cmd} {
 }
 
 #
+# Given a record as returned by the readNextRecord function and a field name,
+# returns the value of said field. Requesting a field that does not exist
+# results in an empty value being returned.
+#
+# NOTE: This function serves as a wrapper around dict get and is intended to
+#       offer additional functionality around ADIF records, including
+#       formatting and translating values into human readable formats.
+#
+proc ::adif::getField {record field} {
+    set field [string tolower $field]
+    if {![dict exists $record recordData $field]} {
+        return ""
+    }
+
+    return [dict get $record recordData $field]
+}
+
+#
 # Given a channel containing ADIF formatted data, this function will return the
 # next record in the channel. Note the function will block until a complete record
 # is available or EOF is returned.
