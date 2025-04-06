@@ -44,8 +44,7 @@ proc main {argc argv} {
 
             # We're only converting qso records. Skip everything else
             if {[::adif::recordType $adifRecord] == "qso"} {
-                set adifRecordFields [dict get $adifRecord recordData]
-                puts $outChan [adifToCabrillo $txExchFields $rxExchFields $adifRecordFields]
+                puts $outChan [adifToCabrillo $txExchFields $rxExchFields $adifRecord]
             }
 
         }
@@ -67,41 +66,43 @@ proc main {argc argv} {
 #QSO:  3799 PH 1999-03-06 0711 HC8N           59 700    W1AW           59 CT     0
 #QSO:  3799 PH 1999-03-06 0712 HC8N           59 700    N5KO           59 CA     0
 #
-proc adifToCabrillo {txExchFields rxExchFields adifFields} {
+proc adifToCabrillo {txExchFields rxExchFields adifRecord} {
     set cabrillo "QSO: "
 
     # Frequency in ADIF is MHz, but in Cabrillo is rounded to nearest KHz
-    set freq [dict get $adifFields freq]
+    set freq [adif::getField $adifRecord freq]
     set freq [expr {round($freq * 1000)}]
     append cabrillo [format "%5d" $freq] " "
 
     # Generate the Cabrillo mode field
-    set mode [adifToCabrilloMode [dict get $adifFields mode]]
+    set mode [adifToCabrilloMode [adif::getField $adifRecord mode]]
     append cabrillo $mode " "
 
     # Generate the date and time portions of the record (UTC)
-    set timestamp "[dict get $adifFields qso_date] [dict get $adifFields time_on]"
+    set timestamp "[adif::getField $adifRecord qso_date] [adif::getField $adifRecord time_on]"
     set timestamp [clock scan $timestamp -timezone :UTC -format "%Y%m%d %H%M%S"]
     set date [clock format $timestamp -timezone :UTC -format "%Y-%m-%d"]
     set time [clock format $timestamp -timezone :UTC -format "%H%M"]
     append cabrillo $date " " $time " "
 
     # Generate the transmitted portion of the record
-    append cabrillo [format "%- 14s" [dict get $adifFields operator]] " "
+    append cabrillo [format "%- 14s" [adif::getField $adifRecord operator]] " "
     set txExch ""
     foreach fieldName $txExchFields {
-        if {[dict exists $adifFields $fieldName]} {
-            append txExch [dict get $adifFields $fieldName] " "
+        set value [adif::getField $adifRecord $fieldName]
+        if {$value != ""} {
+            append txExch $value " "
         }
     }
     append cabrillo [format "%- 10s" $txExch]
 
     # Generate the received portion of the record
-    append cabrillo [format "%- 14s" [dict get $adifFields call]] " "
+    append cabrillo [format "%- 14s" [adif::getField $adifRecord call]] " "
     set rxExch ""
     foreach fieldName $rxExchFields {
-        if {[dict exists $adifFields $fieldName]} {
-            append rxExch [dict get $adifFields $fieldName] " "
+        set value [adif::getField $adifRecord $fieldName]
+        if {$value != ""} {
+            append rxExch $value " "
         }
     }
     append cabrillo [format "%- 10s" $rxExch]
