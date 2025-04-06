@@ -51,7 +51,11 @@ proc ::adif::foreachRecordInFile {var file cmd} {
 #
 # By default, if a corresponding formatter exists in the ::adif::formatters
 # namespace, then the formatter is called to convert the raw value of the
-# field into a human readable value before returning.
+# field into a human readable value before returning. This behavior may be
+# disabled by appending '.raw' to the field name. For example, passing "dxcc"
+# as the field name will return the formatted dxcc value, while passing
+# "dxcc.raw" as the field name will return the raw value of the field as it
+# appears in the ADIF record, without formatting.
 #
 # NOTE: This function serves as a wrapper around dict get and is intended to
 #       offer additional functionality around ADIF records, including
@@ -59,6 +63,9 @@ proc ::adif::foreachRecordInFile {var file cmd} {
 #
 proc ::adif::getField {record field} {
     set field [string tolower $field]
+
+    # The field name may have a format modifier appended
+    foreach {field formatModifier} [split $field .] {}
 
     # If the field is missing, just return an empty string
     if {![dict exists $record recordData $field]} {
@@ -68,9 +75,11 @@ proc ::adif::getField {record field} {
     set value [dict get $record recordData $field]
 
     # Lookup any available formatter for this field
-    set formatterName formatters::$field.from
-    if {[info commands $formatterName] != ""} {
-        set value [$formatterName $value]
+    if {$formatModifier != "raw"} {
+        set formatterName formatters::$field.from
+        if {[info commands $formatterName] != ""} {
+            set value [$formatterName $value]
+        }
     }
 
     return $value

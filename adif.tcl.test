@@ -62,6 +62,12 @@ namespace eval ::adif::test {
         } -body {
             getField $record dxcc
         } -result "UNITED STATES OF AMERICA"
+    test getField-5 {return the raw value of a formatted field} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            getField $record dxcc.raw
+        } -result "291"
 
     test writeRecord-1 {write qso record} \
         -setup {
