@@ -86,7 +86,9 @@ namespace eval ::adif::formatters {
 
     MakeFormatMaps DxccFrom DxccTo "dxcc.txt"
     proc dxcc.from {dxcc} { SimpleLookup DxccFrom $dxcc }
+    proc dxcc.to {dxcc} { SimpleLookup DxccTo $dxcc }
 
     MakeFormatMaps ContFrom ContTo "cont.txt"
     proc cont.from {cont} { SimpleLookup ContFrom $cont }
+    proc cont.to {cont} { SimpleLookup ContTo $cont }
 }

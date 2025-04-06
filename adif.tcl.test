@@ -88,6 +88,37 @@ namespace eval ::adif::test {
             getField $record nosuchfield "UNKNOWN"
         } -result "UNKNOWN"
 
+    test setField-1 {field value is properly set} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            setField record call "DEF456"
+            return $record
+        } -result [dict create recordType qso recordData [dict create call DEF456 dxcc 291]]
+    test setField-2 {return value is the modified record} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            setField record call "DEF456"
+        } -result [dict create recordType qso recordData [dict create call DEF456 dxcc 291]]
+    test setField-3 {raw field value is properly set} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            setField record dxcc.raw "Canada"
+        } -result [dict create recordType qso recordData [dict create call ABC123 dxcc Canada]]
+    test setField-4 {formatted field value is properly set} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            setField record dxcc "Canada"
+        } -result [dict create recordType qso recordData [dict create call ABC123 dxcc 1]]
+    test setField-5 {case insensitive field name value is properly set} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            setField record CALL DEF456
+        } -result [dict create recordType qso recordData [dict create call DEF456 dxcc 291]]
 
     test writeRecord-1 {write qso record} \
         -setup {

@@ -20,7 +20,7 @@ source adif.formatters.tcl
 package require adif::formatters 0.1
 
 namespace eval ::adif {
-    namespace export foreachRecordInFile recordType getField readNextRecord writeRecord
+    namespace export foreachRecordInFile recordType setField getField readNextRecord writeRecord
 }
 
 #
@@ -50,6 +50,42 @@ proc ::adif::foreachRecordInFile {var file cmd} {
 #
 proc ::adif::recordType {record} {
     return [dict get $record recordType]
+}
+
+#
+# Given the name of a variable holding a record as returned by the
+# readNextRecord function, a field name, and a value, sets the
+# specified field to the value and returns the record contents.
+#
+# By default, if a corresponding formatter exists in the ::adif::formatters
+# namespace, then the formatter is called to convert the value from a human
+# readable value to the corresponding ADIF enumeration value.  This behavior
+# may be disabled by appending '.raw' to the field name. For example, passing
+# "dxcc" as the field name will convert the value before writing, while passing
+# "dxcc.raw" as the field name will write the raw value of the field without
+# invoking any formatters.
+#
+# NOTE: This function serves as a wrapper around dict set and is intended to
+#       offer additional functionality around ADIF records, including
+#       formatting and translating values from human readable formats.
+#
+proc ::adif::setField {var field value} {
+    upvar $var record
+
+    set field [string tolower $field]
+
+    # The field name may have a format modifier appended
+    foreach {field formatModifier} [split $field .] {}
+
+    # Lookup any available formatter for this field
+    if {$formatModifier != "raw"} {
+        set formatterName formatters::$field.to
+        if {[info commands $formatterName] != ""} {
+            set value [$formatterName $value]
+        }
+    }
+
+    return [dict set record recordData $field $value]
 }
 
 #

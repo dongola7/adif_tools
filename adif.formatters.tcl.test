@@ -24,6 +24,15 @@ namespace eval ::adif::formatters::test {
             [namespace parent]::dxcc.from 99999
         } -result "99999"
 
+    test dxcc.to-1 {convert country to dxcc} \
+        -body {
+            [namespace parent]::dxcc.to "United States of America"
+        } -result 291
+    test dxcc,to-1 {convert country to dxcc case insensitive} \
+        -body {
+            [namespace parent]::dxcc.to "united states of america"
+        } -result 291
+
     test cont.from-1 {convert cont code to continent} \
         -body {
             [namespace parent]::cont.from "na"
@@ -36,6 +45,15 @@ namespace eval ::adif::formatters::test {
         -body {
             [namespace parent]::cont.from "NA"
         } -result "North America"
+
+    test cont.to-1 {convert continent to cont code} \
+        -body {
+            [namespace parent]::cont.to "North America"
+        } -result "NA"
+    test cont.to-1 {convert continent to cont code case insensitive} \
+        -body {
+            [namespace parent]::cont.to "north america"
+        } -result "NA"
 
     cleanupTests
 }
