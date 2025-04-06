@@ -1,7 +1,7 @@
 #!/usr/bin/tclsh
 
 # Copyright (c) 2025, Blair Kitchen
-# All rights resetved.
+# All rights reserved.
 #
 # See the file "license.terms" for informatio on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
