@@ -18,7 +18,7 @@ namespace eval ::adif::formatters::test {
     test dxcc.from-1 {convert dxcc to country} \
         -body {
             [namespace parent]::dxcc.from 291
-        } -result "UNITED STATES OF AMERICA"
+        } -result "United States of America"
     test dxcc.from-2 {convert unknown dxcc value} \
         -body {
             [namespace parent]::dxcc.from 99999
@@ -32,6 +32,10 @@ namespace eval ::adif::formatters::test {
         -body {
             [namespace parent]::cont.from "abc"
         } -result "abc"
+    test cont.from-3 {convert case insensitive cont code} \
+        -body {
+            [namespace parent]::cont.from "NA"
+        } -result "North America"
 
     cleanupTests
 }

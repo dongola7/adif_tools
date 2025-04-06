@@ -1,0 +1,12 @@
+#
+# Maps the CONT value from an ADIF file to it's corresponding continent name.
+# This mapping comes from https://www.adif.org/315/ADIF_315.htm#Continent_Enumeration
+#
+
+NA "North America"
+SA "South America"
+EU "Europe"
+AF "Africa"
+OC "Oceania"
+AS "Asia"
+AN "Antarctica"
