@@ -17,6 +17,7 @@ package require Tcl 8.5
 package provide adif 0.1
 
 namespace eval ::adif {
+    namespace export foreachRecordInFile getField readNextRecord writeRecord contToName dxccToName
 }
 
 #

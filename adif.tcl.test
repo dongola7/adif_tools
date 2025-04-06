@@ -14,77 +14,78 @@ eval ::tcltest::configure $argv
 
 namespace eval ::adif::test {
     namespace import ::tcltest::*
+    namespace import ::adif::*
 
     test readNextRecord-1 {read a standard QSO record} \
         -setup {
             set fileName [makeFile "<CALL:6>ABC123<DXCC:3>291<EOR>" input.adif]
             set inChan [open $fileName "r"]
         } -body {
-            ::adif::readNextRecord $inChan
+            readNextRecord $inChan
         } -result [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
     test readNextRecord-2 {read a standard ADIF header record} \
         -setup {
             set fileName [makeFile "<PROGRAMID:4>ADIF<ADIF_VER:5>3.1.3<EOH>" input.adif]
             set inChan [open $fileName "r"]
         } -body {
-            ::adif::readNextRecord $inChan
+            readNextRecord $inChan
         } -result [dict create recordType header recordData [dict create programid ADIF adif_ver 3.1.3]]
     test readNextRecord-3 {return empty record on EOF} \
         -setup {
             set fileName [makeFile "<CALL:6>ABC123<DXCC:3>291<" input.adif]
             set inChan [open $fileName "r"]
         } -body {
-            ::adif::readNextRecord $inChan
+            readNextRecord $inChan
         } -result [dict create]
 
     test getField-1 {get the value of a field} \
         -setup {
             set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
         } -body {
-            ::adif::getField $record call
+            getField $record call
         } -result "ABC123"
     test getField-2 {return empty value when field does not exist} \
         -setup {
             set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
         } -body {
-            ::adif::getField $record nosuchfield
+            getField $record nosuchfield
         } -result ""
     test getField-3 {return the value of a field case insensitive field name} \
         -setup {
             set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
         } -body {
-            ::adif::getField $record CALL
+            getField $record CALL
         } -result "ABC123"
 
     test writeRecord-1 {write qso record} \
         -setup {
             set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
         } -body {
-            ::adif::writeRecord stdout $record
+            writeRecord stdout $record
         } -output "<CALL:6>ABC123\n<DXCC:3>291\n<EOR>\n\n"
     test writeRecord-2 {write header record} \
         -setup {
             set record [dict create recordType header recordData [dict create programid ADIF adif_ver 3.1.3]]
         } -body {
-            ::adif::writeRecord stdout $record
+            writeRecord stdout $record
         } -output "<PROGRAMID:4>ADIF\n<ADIF_VER:5>3.1.3\n<EOH>\n\n"
 
     test dxccToName-1 {convert dxcc to country} \
         -body {
-            ::adif::dxccToName 291
+            dxccToName 291
         } -result "UNITED STATES OF AMERICA"
     test dxccToName-2 {convert unknown dxcc value} \
         -body {
-            ::adif::dxccToName 99999
+            dxccToName 99999
         } -result "dxcc-99999"
 
     test contToName-1 {convert cont code to continent} \
         -body {
-            ::adif::contToName "na"
+            contToName "na"
         } -result "NORTH AMERICA"
     test contToName-2 {convert unknown cont code} \
         -body {
-            ::adif::contToName "abc"
+            contToName "abc"
         } -result "continent-abc"
 
     test foreachRecordInFile-1 {read multiple records in file} \
@@ -92,7 +93,7 @@ namespace eval ::adif::test {
             set fileName [makeFile "<CALL:6>ABC123<DXCC:3>291<EOR><CALL:6>DEF456<DXCC:3>101<EOR>" input.adif]
         } -body {
             set result [list]
-            ::adif::foreachRecordInFile record $fileName {
+            foreachRecordInFile record $fileName {
                 lappend result $record
             }
             return $result
