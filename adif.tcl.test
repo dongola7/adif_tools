@@ -162,6 +162,28 @@ namespace eval ::adif::test {
         } -result [list [dict create recordType qso recordData [dict create call ABC123 dxcc 291]] \
             [dict create recordType qso recordData [dict create call DEF456 dxcc 101]]]
 
+    test foreachFieldFormatted-1 {iterate across fields using formatting} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            set result {}
+            foreachField $record {field value} {
+                lappend result $field $value
+            }
+            return $result
+        } -result [list call ABC123 dxcc "United States of America"]
+
+    test foreachFieldRaw-1 {iterate across fields without formatting} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            set result {}
+            foreachFieldRaw $record {field value} {
+                lappend result $field $value
+            }
+            return $result
+        } -result [list call ABC123 dxcc 291]
+
     cleanupTests
 }
 

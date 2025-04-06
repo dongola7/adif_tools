@@ -20,7 +20,7 @@ source adif.formatters.tcl
 package require adif::formatters 0.1
 
 namespace eval ::adif {
-    namespace export foreachRecordInFile createRecord recordType setField getField readNextRecord writeRecord
+    namespace export foreachRecordInFile foreachField foreachFieldRaw createRecord recordType setField getField readNextRecord writeRecord
 }
 
 #
@@ -42,6 +42,34 @@ proc ::adif::foreachRecordInFile {var file cmd} {
     }
 
     close $inChan
+}
+
+#
+# Given a record as returned from readNextRecord, iterates across all the
+# the fields in the record and calls the script cmd for each record. During
+# execution, the variable fieldVar is set to the name of the field and valueVar
+# is set to the fields formatted value.
+#
+proc ::adif::foreachField {record varList cmd} {
+    upvar [lindex $varList 0] field
+    upvar [lindex $varList 1] value
+
+    dict for {field value} [dict get $record recordData] {
+        set value [FormatValue from $field $value]
+        uplevel $cmd
+    }
+}
+
+#
+# Same as foreachField, except that values returned are unformatted.
+#
+proc ::adif::foreachFieldRaw {record varList cmd} {
+    upvar [lindex $varList 0] field
+    upvar [lindex $varList 1] value
+
+    dict for {field value} [dict get $record recordData] {
+        uplevel $cmd
+    }
 }
 
 #
@@ -93,10 +121,7 @@ proc ::adif::setField {var field value} {
 
     # Lookup any available formatter for this field
     if {$formatModifier != "raw"} {
-        set formatterName formatters::$field.to
-        if {[info commands $formatterName] != ""} {
-            set value [$formatterName $value]
-        }
+        set value [FormatValue to $field $value]
     }
 
     return [dict set record recordData $field $value]
@@ -134,12 +159,21 @@ proc ::adif::getField {record field {defaultValue ""}} {
 
     # Lookup any available formatter for this field
     if {$formatModifier != "raw"} {
-        set formatterName formatters::$field.from
-        if {[info commands $formatterName] != ""} {
-            set value [$formatterName $value]
-        }
+        set value [FormatValue from $field $value]
     }
 
+    return $value
+}
+
+#
+# Given a direction (to|from), a field, and a value, returns the formatted
+# value. If no formatter is found, returns the value as-is
+#
+proc ::adif::FormatValue {direction field value} {
+    set formatterName formatters::$field.$direction
+    if {[info commands $formatterName] != ""} {
+        set value [$formatterName $value]
+    }
     return $value
 }
 
