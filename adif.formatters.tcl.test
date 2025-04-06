@@ -27,7 +27,7 @@ namespace eval ::adif::formatters::test {
     test cont.from-1 {convert cont code to continent} \
         -body {
             [namespace parent]::cont.from "na"
-        } -result "NORTH AMERICA"
+        } -result "North America"
     test cont.from-2 {convert unknown cont code} \
         -body {
             [namespace parent]::cont.from "abc"

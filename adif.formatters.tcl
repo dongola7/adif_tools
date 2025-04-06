@@ -54,19 +54,19 @@ namespace eval ::adif::formatters {
     proc cont.from {cont} {
         set cont [string tolower $cont]
         if {$cont == "na"} {
-            return "NORTH AMERICA"
+            return "North America"
         } elseif {$cont == "sa"} {
-            return "SOUTH AMERICA"
+            return "South America"
         } elseif {$cont == "eu" } {
-            return "EUROPE"
+            return "Europe"
         } elseif {$cont == "af"} {
-            return "AFRICA"
+            return "Africa"
         } elseif {$cont == "oc"} {
-            return "OCEANIA"
+            return "Oceania"
         } elseif {$cont == "as"} {
-            return "ASIA"
+            return "Asia"
         } elseif {$cont == "an"} {
-            return "ANTARCTICA"
+            return "Antarctica"
         } else {
             return $cont
         }
