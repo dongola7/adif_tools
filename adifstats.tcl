@@ -52,14 +52,12 @@ proc main {argc argv} {
                 incr totalQsos
                 dict incr qsosByFile $inputFile
 
-                set recordFields [dict get $adifRecord recordData]
-                
                 # Compute statistics based on desired options
                 if {$params(country)} {
-                    aggregateContinentStats continentDict $recordFields
+                    aggregateContinentStats continentDict $adifRecord
                 }
                 if {$params(prefix)} {
-                    aggregateCallsignPrefix prefixDict $recordFields
+                    aggregateCallsignPrefix prefixDict $adifRecord
                 }
             }
 
@@ -90,10 +88,10 @@ proc main {argc argv} {
 # aggregates all of the unique callsign prefixes for output by the
 # printCallsignPrefixStats function.
 #
-proc aggregateCallsignPrefix {prefixDictVar recordFields} {
+proc aggregateCallsignPrefix {prefixDictVar adifRecord} {
     upvar $prefixDictVar prefixDict
 
-    set call [dict get $recordFields call]
+    set call [::adif::getField $adifRecord call]
     regexp {([A-Za-z]+[0-9]+)} $call -> prefix
 
     set count 1
@@ -144,22 +142,20 @@ proc printCallsignPrefixStats {prefixDict outChan} {
 # If either the DXCC or CONT fields are missing, the QSO will be aggregated
 # in the appropriate UNKNOWN bucket.
 #
-proc aggregateContinentStats {continentDictVar recordFields} {
+proc aggregateContinentStats {continentDictVar adifRecord} {
     upvar $continentDictVar continentDict
 
-    set continent "UNKNOWN"
-    if {[dict exists $recordFields cont]} {
-        set continent [dict get $recordFields cont]
+    set continent [::adif::getField $adifRecord cont]
+    if {$continent == ""} {
+        set continent "UNKNOWN"
     }
-    set continent [::adif::contToName $continent]
 
-    set dxcc "UNKNOWN"
-    if {[dict exists $recordFields dxcc]} {
-        set dxcc [dict get $recordFields dxcc]
+    set dxcc [::adif::getField $adifRecord dxcc]
+    if {$dxcc == ""} {
+        set dxcc "UNKNOWN"
     }
-    set dxcc [::adif::dxccToName $dxcc]
 
-    set band [freqToBand [dict get $recordFields freq]]
+    set band [freqToBand [::adif::getField $adifRecord freq]]
 
     # Increment the country level count
     set count 1
