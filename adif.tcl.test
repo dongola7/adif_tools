@@ -51,6 +51,23 @@ namespace eval ::adif::test {
             recordType $record
         } -result "header"
 
+    test createRecord-1 {create qso type record} \
+        -body {
+            createRecord qso
+        } -result [dict create recordType qso recordData [dict create]]
+    test createRecord-2 {create header type record} \
+        -body {
+            createRecord header
+        } -result [dict create recordType header recordData [dict create]]
+    test createRecord-3 {error on create unknown record type} \
+        -body {
+            createRecord foo
+        } -returnCodes error -result "unknown recordType 'foo'"
+    test createRecord-4 {create record case insensitive} \
+        -body {
+            createRecord QSO
+        } -result [dict create recordType qso recordData [dict create]]
+
     test getField-1 {get the value of a field} \
         -setup {
             set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]

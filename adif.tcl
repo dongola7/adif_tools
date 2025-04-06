@@ -20,7 +20,7 @@ source adif.formatters.tcl
 package require adif::formatters 0.1
 
 namespace eval ::adif {
-    namespace export foreachRecordInFile recordType setField getField readNextRecord writeRecord
+    namespace export foreachRecordInFile createRecord recordType setField getField readNextRecord writeRecord
 }
 
 #
@@ -42,6 +42,20 @@ proc ::adif::foreachRecordInFile {var file cmd} {
     }
 
     close $inChan
+}
+
+#
+# Given a record type (header or qso), creates and returns a new record of the
+# corresponding type. The record is suitable for passing to setField, getField,
+# writeRecord, etc.
+#
+proc ::adif::createRecord {recordType} {
+    set recordType [string tolower $recordType]
+
+    if {$recordType != "header" && $recordType != "qso"} {
+        error "unknown recordType '$recordType'"
+    }
+    return [dict create recordType $recordType recordData [dict create]]
 }
 
 #
@@ -174,7 +188,9 @@ proc ::adif::readNextRecord {chan} {
             } else {
                 set recordType "qso"
             }
-            return [dict create recordType $recordType recordData $fieldValues]
+            set record [createRecord $recordType]
+            dict set record recordData $fieldValues
+            return $record
         }
 
         # We have a new record field. Parse the name/length, read the value, and
