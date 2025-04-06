@@ -68,6 +68,13 @@ namespace eval ::adif::test {
         } -body {
             getField $record dxcc.raw
         } -result "291"
+    test getField-6 {return the specified default if field does not exist} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            getField $record nosuchfield "UNKNOWN"
+        } -result "UNKNOWN"
+
 
     test writeRecord-1 {write qso record} \
         -setup {

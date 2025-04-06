@@ -145,15 +145,9 @@ proc printCallsignPrefixStats {prefixDict outChan} {
 proc aggregateContinentStats {continentDictVar adifRecord} {
     upvar $continentDictVar continentDict
 
-    set continent [::adif::getField $adifRecord cont]
-    if {$continent == ""} {
-        set continent "UNKNOWN"
-    }
+    set continent [::adif::getField $adifRecord cont "UNKNOWN"]
 
-    set dxcc [::adif::getField $adifRecord dxcc]
-    if {$dxcc == ""} {
-        set dxcc "UNKNOWN"
-    }
+    set dxcc [::adif::getField $adifRecord dxcc "UNKNOWN"]
 
     set band [freqToBand [::adif::getField $adifRecord freq]]
 

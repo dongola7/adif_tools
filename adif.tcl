@@ -47,7 +47,7 @@ proc ::adif::foreachRecordInFile {var file cmd} {
 #
 # Given a record as returned by the readNextRecord function and a field name,
 # returns the value of said field. Requesting a field that does not exist
-# results in an empty value being returned.
+# results in defaultValue being returned.
 #
 # By default, if a corresponding formatter exists in the ::adif::formatters
 # namespace, then the formatter is called to convert the raw value of the
@@ -61,7 +61,7 @@ proc ::adif::foreachRecordInFile {var file cmd} {
 #       offer additional functionality around ADIF records, including
 #       formatting and translating values into human readable formats.
 #
-proc ::adif::getField {record field} {
+proc ::adif::getField {record field {defaultValue ""}} {
     set field [string tolower $field]
 
     # The field name may have a format modifier appended
@@ -69,7 +69,7 @@ proc ::adif::getField {record field} {
 
     # If the field is missing, just return an empty string
     if {![dict exists $record recordData $field]} {
-        return ""
+        return $defaultValue
     }
 
     set value [dict get $record recordData $field]
