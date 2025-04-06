@@ -13,26 +13,43 @@ package require Tcl 8.5
 
 package provide adif::formatters 0.1
 
+#
+# Formatters for ADIF fields should be defined in the following namespace. The
+# naming convention is important as the specific convention is used by the adif
+# package to locate a formatter for automatic conversion.
+#
+# The format is as follows: <adif-field>.<to|from> where:
+#   * adif-field - Is the lowercase name of the ADIF field
+#   * to|from - 'to' indicates the function converts from human readable to
+#               ADIF format, while 'from' indicates the function converts from
+#               ADIF format to human readable.
+#
+# Example: A function named 'dxcc.from' converts the DXCC field from it's
+#          numerical value to a human readable value. 'dxcc.to' would convert
+#          from the human readable value to the original ADIF value.
+#
+# All functions should accept a single input: the value to be converted.
+# The output should be either the converted value, or, if no conversion is
+# possible, the original input value.
+#
 namespace eval ::adif::formatters {
 
     #
     # Given an ADIF DXCC enumeration from the DXCC field, returns
-    # the associated country name. Returns dxcc-<dxcc> if the enumeration
-    # is not recognized.
+    # the associated country name. 
     #
     proc dxcc.from {dxcc} {
         variable Dxcc2Country
         if {[info exists Dxcc2Country($dxcc)]} {
             return $Dxcc2Country($dxcc)
         } else {
-            return "dxcc-$dxcc"
+            return $dxcc
         }
     }
 
     #
     # Given an ADIF Continent enumeration from the CONT field, returns
-    # the full continent name. Returns continent-<cont> if the enumeration
-    # is not recognized. This function is not case sensitive.
+    # the full continent name.  This function is not case sensitive.
     #
     proc cont.from {cont} {
         set cont [string tolower $cont]
@@ -51,7 +68,7 @@ namespace eval ::adif::formatters {
         } elseif {$cont == "an"} {
             return "ANTARCTICA"
         } else {
-            return "continent-$cont"
+            return $cont
         }
     }
 
