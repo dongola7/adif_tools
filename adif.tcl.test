@@ -38,6 +38,19 @@ namespace eval ::adif::test {
             readNextRecord $inChan
         } -result [dict create]
 
+    test recordType-1 {return qso type} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            recordType $record
+        } -result "qso"
+    test recordType-2 {return header type} \
+        -setup {
+            set record [dict create recordType header recordData [dict create programid ADIF adif_ver 3.1.3]]
+        } -body {
+            recordType $record
+        } -result "header"
+
     test getField-1 {get the value of a field} \
         -setup {
             set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]

@@ -48,7 +48,7 @@ proc main {argc argv} {
         ::adif::foreachRecordInFile adifRecord $inputFile {
 
             # We're only processing qso records. Skip everything else
-            if {[dict get $adifRecord recordType] == "qso"} {
+            if {[::adif::recordType $adifRecord] == "qso"} {
                 incr totalQsos
                 dict incr qsosByFile $inputFile
 

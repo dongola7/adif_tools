@@ -20,7 +20,7 @@ source adif.formatters.tcl
 package require adif::formatters 0.1
 
 namespace eval ::adif {
-    namespace export foreachRecordInFile getField readNextRecord writeRecord contToName dxccToName
+    namespace export foreachRecordInFile recordType getField readNextRecord writeRecord
 }
 
 #
@@ -42,6 +42,14 @@ proc ::adif::foreachRecordInFile {var file cmd} {
     }
 
     close $inChan
+}
+
+#
+# Given a record as returned by the readNextRecord function, returns
+# the type of said record, either qso or header.
+#
+proc ::adif::recordType {record} {
+    return [dict get $record recordType]
 }
 
 #
@@ -95,6 +103,10 @@ proc ::adif::getField {record field {defaultValue ""}} {
 #    recordData - A nested dict where with the keys being record field names and the values
 #                 being the corresponding field values. Because field names in ADIF are
 #                 case insensitive, all field names will be normalized in lower case.
+#
+# NOTE: While the function returns a dict, it is recommended you DO NOT access the dict
+#       directly, as the format is liable to change. Instead, use the recordType, getField,
+#       setField, and other helper functions to access the record data.
 #
 # If EOF is detected before a complete record is found, an empty dict is returned
 #

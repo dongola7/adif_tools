@@ -43,7 +43,7 @@ proc main {argc argv} {
         ::adif::foreachRecordInFile adifRecord $inputFile {
 
             # We're only converting qso records. Skip everything else
-            if {[dict get $adifRecord recordType] == "qso"} {
+            if {[::adif::recordType $adifRecord] == "qso"} {
                 set adifRecordFields [dict get $adifRecord recordData]
                 puts $outChan [adifToCabrillo $txExchFields $rxExchFields $adifRecordFields]
             }
