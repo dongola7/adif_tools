@@ -1,0 +1,39 @@
+#!/usr/bin/tclsh
+# Copyright (c) 2025, Blair Kitchen
+# All rights reserved.
+#
+# See the file "license.terms" for informatio on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+package require Tcl 8.5
+package require tcltest 2.3
+
+source adif.formatters.tcl
+package require adif::formatters 0.1
+
+eval ::tcltest::configure $argv
+
+namespace eval ::adif::formatters::test {
+    namespace import ::tcltest::*
+
+    test dxcc.from-1 {convert dxcc to country} \
+        -body {
+            [namespace parent]::dxcc.from 291
+        } -result "UNITED STATES OF AMERICA"
+    test dxcc.from-2 {convert unknown dxcc value} \
+        -body {
+            [namespace parent]::dxcc.from 99999
+        } -result "dxcc-99999"
+
+    test cont.from-1 {convert cont code to continent} \
+        -body {
+            [namespace parent]::cont.from "na"
+        } -result "NORTH AMERICA"
+    test cont.from-2 {convert unknown cont code} \
+        -body {
+            [namespace parent]::cont.from "abc"
+        } -result "continent-abc"
+
+    cleanupTests
+}
+
+namespace delete ::adif::formatters::test

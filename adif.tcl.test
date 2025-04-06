@@ -56,6 +56,12 @@ namespace eval ::adif::test {
         } -body {
             getField $record CALL
         } -result "ABC123"
+    test getField-4 {return the value of a formatted field} \
+        -setup {
+            set record [dict create recordType qso recordData [dict create call ABC123 dxcc 291]]
+        } -body {
+            getField $record dxcc
+        } -result "UNITED STATES OF AMERICA"
 
     test writeRecord-1 {write qso record} \
         -setup {
@@ -69,24 +75,6 @@ namespace eval ::adif::test {
         } -body {
             writeRecord stdout $record
         } -output "<PROGRAMID:4>ADIF\n<ADIF_VER:5>3.1.3\n<EOH>\n\n"
-
-    test dxccToName-1 {convert dxcc to country} \
-        -body {
-            dxccToName 291
-        } -result "UNITED STATES OF AMERICA"
-    test dxccToName-2 {convert unknown dxcc value} \
-        -body {
-            dxccToName 99999
-        } -result "dxcc-99999"
-
-    test contToName-1 {convert cont code to continent} \
-        -body {
-            contToName "na"
-        } -result "NORTH AMERICA"
-    test contToName-2 {convert unknown cont code} \
-        -body {
-            contToName "abc"
-        } -result "continent-abc"
 
     test foreachRecordInFile-1 {read multiple records in file} \
         -setup {
