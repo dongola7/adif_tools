@@ -12,8 +12,6 @@
 package require Tcl 8.5
 package require fileutil 1.14
 
-package provide adif::formatters 0.1
-
 #
 # Formatters for ADIF fields should be defined in the following namespace. The
 # naming convention is important as the specific convention is used by the adif

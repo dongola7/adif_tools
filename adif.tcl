@@ -16,8 +16,8 @@ package require Tcl 8.5
 
 package provide adif 0.1
 
-source adif.formatters.tcl
-package require adif::formatters 0.1
+set dir [file dirname [file normalize [info script]]]
+source [file join $dir adif.formatters.tcl]
 
 namespace eval ::adif {
     namespace export foreachRecordInFile foreachField foreachFieldRaw createRecord recordType setField getField readNextRecord writeRecord
