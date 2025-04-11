@@ -15,7 +15,7 @@ exec tclsh "$0" "$@"
 package require Tcl 8.5
 package require cmdline 1.3
 
-source adif.tcl
+source [file join [file dirname [file normalize [info script]]] adif.tcl]
 package require adif 0.1
 
 proc main {argc argv} {
