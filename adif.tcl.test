@@ -1,4 +1,7 @@
-#!/usr/bin/tclsh
+#!/bin/sh
+# the next line restarts using tclsh \
+exec tclsh "$0" "$@"
+
 # Copyright (c) 2025, Blair Kitchen
 # All rights reserved.
 #
