@@ -8,7 +8,7 @@ exec tclsh "$0" "$@"
 # See the file "license.terms" for informatio on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 
-package require Tcl 8.5
+package require Tcl 9.0
 package require tcltest 2.3
 
 ::tcltest::configure -testdir [file dirname [file normalize [info script]]]

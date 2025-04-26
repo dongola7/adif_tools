@@ -13,7 +13,7 @@ exec tclsh "$0" "$@"
 # readable format, with one record per line
 #
 
-package require Tcl 8.5
+package require Tcl 9.0
 package require cmdline 1.3
 
 source [file join [file dirname [file normalize [info script]]] adif.tcl]

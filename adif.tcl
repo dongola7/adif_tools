@@ -12,7 +12,7 @@
 # This is really a personal project intended as a WIP and meeting whatever my
 # needs are at the time.
 #
-package require Tcl 8.5
+package require Tcl 9.0
 
 package provide adif 0.1
 

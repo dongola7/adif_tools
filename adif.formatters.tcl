@@ -9,7 +9,7 @@
 # formatters for converting to/from values in ADIF format into human
 # readable values.
 #
-package require Tcl 8.5
+package require Tcl 9.0
 package require fileutil 1.14
 
 #

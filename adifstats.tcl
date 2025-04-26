@@ -12,7 +12,7 @@ exec tclsh "$0" "$@"
 # Script to print some contest related statistics from an ADIF file. Purpose
 # is to help with scoring Amateur Radio Contests
 #
-package require Tcl 8.5
+package require Tcl 9.0
 package require cmdline 1.3
 
 source [file join [file dirname [file normalize [info script]]] adif.tcl]

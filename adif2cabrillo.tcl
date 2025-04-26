@@ -14,7 +14,7 @@ exec tclsh "$0" "$@"
 # Note it's only been tested with ADIF files from MacLoggerDX. Adjustments may be needed
 # for other logging programs. I'll try to keep it updated as I gain more experience.
 #
-package require Tcl 8.5
+package require Tcl 9.0
 package require cmdline 1.3
 
 source [file join [file dirname [file normalize [info script]]] adif.tcl]
