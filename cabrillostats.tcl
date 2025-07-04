@@ -60,11 +60,11 @@ proc main {argc argv} {
     debug "stats=$stats"
 
     foreach band [lsort [dict keys $stats]] {
-        puts -nonewline "$band: "
+        puts -nonewline $outChan "$band: "
         foreach mode [lsort [dict keys [dict get $stats $band]]] {
-            puts -nonewline "$mode = [dict get $stats $band $mode] "
+            puts -nonewline $outChan "$mode = [dict get $stats $band $mode] "
         }
-        puts ""
+        puts $outChan ""
     }
 }
 
