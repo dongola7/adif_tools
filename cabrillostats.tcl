@@ -58,7 +58,7 @@ proc main {argc argv} {
             if {[string first "QSO:" $record] != 0} {
                 incr nonQsoCount
                 log::debug "skipping $record"
-            } elseif {[regexp -- {QSO:[[:space:]]+([0-9]+)[[:space:]]+([A-Z]+)} $record -> freq mode]} {
+            } elseif {[regexp -- {QSO:[[:space:]]+([[:digit:]\.]+)[[:space:]]+([A-Z]+)} $record -> freq mode]} {
                 # Frequency is in Hz, convert to MHz
                 set freq [expr {$freq/1000.0}]
                 set band [freqToBand $freq]
