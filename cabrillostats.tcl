@@ -19,12 +19,15 @@ package require fileutil 1.14
 proc main {argc argv} {
     set options {
         {output.arg "" "name of the output file. stdout if ammitted"}
+        {verbosity.arg "0" "logging verbosity (0, 1, 2)"}
     }
     set usage ": cabrillostats.tcl \[options] file1 file2 ... \noptions:"
     if {[catch {array set params [::cmdline::getoptions argv $options $usage]} result]} {
         puts $result
         exit -1
     }
+
+    log::setVerbosity $params(verbosity)
 
     set outChan stdout
     if {$params(output) != ""} {
@@ -36,11 +39,26 @@ proc main {argc argv} {
     # the number of QSOs.
     set stats [dict create]
 
+    set malformedCount 0
+    set matchedCount 0
+    set nonQsoCount 0
+    set totalRecordCount 0
     foreach inputFile [::cmdline::getfiles $argv false] {
-        debug "processing $inputFile"
+        log::info "processing $inputFile"
         fileutil::foreachLine record $inputFile {
             set record [string trim $record]
-            if {[regexp -- {QSO:[[:space:]]+([0-9]+)[[:space:]]+([A-Z]+)} $record -> freq mode]} {
+
+            if {$record == ""} {
+                # Skip empty records
+                continue
+            }
+
+            incr totalRecordCount
+
+            if {[string first "QSO:" $record] != 0} {
+                incr nonQsoCount
+                log::debug "skipping $record"
+            } elseif {[regexp -- {QSO:[[:space:]]+([0-9]+)[[:space:]]+([A-Z]+)} $record -> freq mode]} {
                 # Frequency is in Hz, convert to MHz
                 set freq [expr {$freq/1000.0}]
                 set band [freqToBand $freq]
@@ -52,20 +70,28 @@ proc main {argc argv} {
                 set counter [dict get $stats $band $mode]
                 dict set stats $band $mode [incr counter]
 
-                debug "matched $record freq=$freq band=$band mode=$mode"
+                incr matchedCount
+                log::debug "matched $record freq=$freq band=$band mode=$mode"
+            } else {
+                incr malformedCount
+                log::error "malformed $record"
             }
         }
     }
 
-    debug "stats=$stats"
+    log::debug "stats=$stats"
 
+    set totalQsos 0
     foreach band [lsort [dict keys $stats]] {
         puts -nonewline $outChan "$band: "
         foreach mode [lsort [dict keys [dict get $stats $band]]] {
+            incr totalQsos [dict get $stats $band $mode]
             puts -nonewline $outChan "$mode = [dict get $stats $band $mode] "
         }
         puts $outChan ""
     }
+
+    puts $outChan "Processed $totalRecordCount Records, Non-QSO = $nonQsoCount, Good QSOs = $matchedCount, Malformed QSOs = $malformedCount"
 }
 
 #
@@ -132,8 +158,34 @@ proc freqToBand {freq} {
     }
 }
 
-proc debug {msg} {
-#    puts stderr $msg
+namespace eval ::log {
+    # Stores logging verbosity 0 = error only, 1 = info, 2 = debug
+    set verbosity 0
 }
+
+proc ::log::setVerbosity {lvl} {
+    variable verbosity
+    set verbosity $lvl
+}
+
+proc ::log::LogLine {lvl msg} {
+    variable verbosity
+    if {$verbosity >= $lvl} {
+        puts stderr $msg
+    }
+}
+
+proc ::log::debug {msg} {
+    LogLine 2 "DEBUG $msg"
+}
+
+proc ::log::info {msg} {
+    LogLine 1 "INFO $msg"
+}
+
+proc ::log::error {msg} {
+    LogLine 0 "ERROR $msg"
+}
+
 
 main $argc $argv
