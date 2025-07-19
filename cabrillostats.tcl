@@ -58,20 +58,31 @@ proc main {argc argv} {
             if {[string first "QSO:" $record] != 0} {
                 incr nonQsoCount
                 log::debug "skipping $record"
-            } elseif {[regexp -- {QSO:[[:space:]]+([[:digit:]\.]+)[[:space:]]+([A-Z]+)} $record -> freq mode]} {
-                # Frequency is in Hz, convert to MHz
-                set freq [expr {$freq/1000.0}]
-                set band [freqToBand $freq]
-                set mode [codeToMode $mode]
+            } elseif {[regexp -- {QSO:[[:space:]]+([[:digit:]\.]+)[[:space:]]+([A-Z]+)} $record -> freq code]} {
+                # Frequency is in kHz, convert to MHz
+                set band [freqToBand [expr {$freq/1000.0}]]
+                set mode [codeToMode $code]
 
-                if {![dict exists $stats $band $mode]} {
-                    dict set stats $band $mode 0
+                set errors [list]
+                if {$band == "UNKNOWN"} {
+                    lappend errors "frequency=$freq"
                 }
-                set counter [dict get $stats $band $mode]
-                dict set stats $band $mode [incr counter]
+                if {$mode == "UNKNOWN"} {
+                    lappend errors "mode=$code"
+                }
+                if {[llength $errors] != 0} {
+                    incr malformedCount
+                    log::error "malformed record (unknown [join $errors " / "]) $record"
+                } else {
+                    if {![dict exists $stats $band $mode]} {
+                        dict set stats $band $mode 0
+                    }
+                    set counter [dict get $stats $band $mode]
+                    dict set stats $band $mode [incr counter]
 
-                incr matchedCount
-                log::debug "matched $record freq=$freq band=$band mode=$mode"
+                    incr matchedCount
+                    log::debug "found qso $record freq=$freq band=$band mode=$mode"
+                }
             } else {
                 incr malformedCount
                 log::error "malformed $record"
