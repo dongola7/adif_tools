@@ -106,6 +106,10 @@ proc codeToMode {code} {
         return "CW"
     } elseif {$code == "DG"} {
         return "Digital"
+    } elseif {$code == "RY"} {
+        return "RTTY"
+    } elseif {$code == "FM"} {
+        return "FM"
     }
 
     return "UNKNOWN"
