@@ -18,8 +18,8 @@ package require fileutil 1.14
 
 proc main {argc argv} {
     set options {
-        {output.arg "" "name of the output file. stdout if ammitted"}
-        {verbosity.arg "0" "logging verbosity (0, 1, 2)"}
+        {output.arg "stdout" "name of the output file"}
+        {verbosity.arg "0" "logging verbosity (0 = Error, 1 = Info, 2 = Debug)"}
     }
     set usage ": cabrillostats.tcl \[options] file1 file2 ... \noptions:"
     if {[catch {array set params [::cmdline::getoptions argv $options $usage]} result]} {
@@ -30,7 +30,7 @@ proc main {argc argv} {
     log::setVerbosity $params(verbosity)
 
     set outChan stdout
-    if {$params(output) != ""} {
+    if {$params(output) != "stdout"} {
         set outChan [open $params(output) "w"]
     }
 
